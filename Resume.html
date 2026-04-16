@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SRIJAN SAXENA — ROAD RASH RÉSUMÉ</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0c0c0c;
+  --surface:#161616;
+  --surface2:#1e1e1e;
+  --border:#2a2a2a;
+  --asphalt:#1a1a1a;
+  --road-grey:#333;
+  --text:#e0ddd4;
+  --text-dim:#6a6a6a;
+  --hud-green:#39ff14;
+  --hud-green-dim:#1a7a0a;
+  --hud-yellow:#ffd700;
+  --hud-red:#ff2a2a;
+  --hud-blue:#00bfff;
+  --hud-orange:#ff8c00;
+  --sky-top:#1a0a2e;
+  --sky-bot:#4a1942;
+  --road-line:#d4a017;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'VT323',monospace;
+  background:var(--bg);
+  color:var(--text);
+  overflow-x:hidden;
+  line-height:1.5;
+  cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Crect x='8' y='0' width='4' height='20' fill='%2339ff14'/%3E%3Crect x='0' y='8' width='20' height='4' fill='%2339ff14'/%3E%3C/svg%3E") 10 10, crosshair;
+}
+
+/* ── CRT SCANLINE OVERLAY ── */
+body::after{
+  content:'';position:fixed;inset:0;
+  background:repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,.08) 2px,
+    rgba(0,0,0,.08) 4px
+  );
+  pointer-events:none;z-index:9999;
+}
+body::before{
+  content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.4) 100%);
+  pointer-events:none;z-index:9998;
+}
+
+/* ── LOADER ── */
+.loader{
+  position:fixed;inset:0;z-index:10000;
+  background:var(--bg);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:1.5rem;
+  transition:opacity .5s,visibility .5s;
+}
+.loader.hide{opacity:0;visibility:hidden;}
+.loader-text{
+  font-family:'Press Start 2P',monospace;
+  font-size:clamp(.7rem,2vw,1rem);
+  color:var(--hud-green);
+  animation:blink 1s step-end infinite;
+}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+.loader-bar-wrap{
+  width:240px;height:16px;
+  border:2px solid var(--hud-green);
+  padding:2px;
+}
+.loader-bar{
+  height:100%;width:0;
+  background:var(--hud-green);
+  animation:loadFill 1.5s steps(12) forwards;
+}
+@keyframes loadFill{to{width:100%;}}
+
+/* ── GAME HUD NAV ── */
+.hud-nav{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  background:rgba(12,12,12,.92);
+  backdrop-filter:blur(10px);
+  border-bottom:2px solid var(--hud-green-dim);
+  padding:0 1.5rem;height:52px;
+  display:flex;align-items:center;justify-content:space-between;
+  transform:translateY(-100%);
+  animation:slideD .5s ease 1.8s forwards;
+}
+@keyframes slideD{to{transform:translateY(0);}}
+.hud-left{display:flex;align-items:center;gap:1rem;}
+.hud-player{
+  font-family:'Press Start 2P',monospace;
+  font-size:.6rem;color:var(--hud-green);
+  letter-spacing:.05em;
+}
+.hud-health-wrap{display:flex;align-items:center;gap:.5rem;}
+.hud-health-label{font-size:.8rem;color:var(--hud-yellow);}
+.hud-health-bar{
+  width:100px;height:10px;
+  border:1px solid var(--hud-green-dim);
+  background:var(--surface);
+  position:relative;overflow:hidden;
+}
+.hud-health-fill{
+  height:100%;width:85%;
+  background:linear-gradient(90deg,var(--hud-green),var(--hud-yellow));
+}
+
+.hud-center{display:flex;gap:1.5rem;}
+.hud-center a{
+  text-decoration:none;
+  font-family:'Press Start 2P',monospace;
+  font-size:.5rem;
+  color:var(--text-dim);
+  letter-spacing:.05em;
+  transition:color .3s,text-shadow .3s;
+  cursor:pointer;
+}
+.hud-center a:hover,.hud-center a.active{
+  color:var(--hud-green);
+  text-shadow:0 0 8px rgba(57,255,20,.4);
+}
+
+.hud-right{display:flex;align-items:center;gap:.4rem;}
+.hud-speed{
+  font-family:'Press Start 2P',monospace;
+  font-size:.7rem;color:var(--hud-orange);
+}
+.hud-unit{font-size:.7rem;color:var(--text-dim);}
+
+/* ── HERO: TITLE SCREEN + ROAD ── */
+.hero{
+  min-height:100vh;
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+#roadCanvas{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+}
+.hero-overlay{
+  position:relative;z-index:2;
+  text-align:center;
+  padding:2rem;
+}
+.hero-overlay .game-title{
+  font-family:'Press Start 2P',monospace;
+  font-size:clamp(1.2rem,4vw,2.8rem);
+  color:var(--hud-yellow);
+  text-shadow:
+    0 0 10px rgba(255,215,0,.5),
+    0 4px 0 #aa8800,
+    0 6px 0 #886600,
+    0 8px 20px rgba(0,0,0,.6);
+  letter-spacing:.06em;
+  margin-bottom:.6rem;
+  opacity:0;animation:fadeIn .8s ease 2s forwards;
+}
+.hero-overlay .game-subtitle{
+  font-family:'Press Start 2P',monospace;
+  font-size:clamp(.45rem,1.2vw,.7rem);
+  color:var(--hud-green);
+  letter-spacing:.15em;
+  margin-bottom:2.5rem;
+  text-shadow:0 0 8px rgba(57,255,20,.3);
+  opacity:0;animation:fadeIn .8s ease 2.3s forwards;
+}
+@keyframes fadeIn{to{opacity:1;}}
+
+.title-card{
+  background:rgba(12,12,12,.85);
+  border:2px solid var(--hud-green-dim);
+  border-radius:4px;
+  padding:2rem 3rem;
+  display:inline-block;
+  text-align:left;
+  opacity:0;animation:fadeIn .8s ease 2.6s forwards;
+  box-shadow:0 0 30px rgba(57,255,20,.05),inset 0 0 30px rgba(0,0,0,.3);
+}
+.tc-row{
+  display:flex;align-items:baseline;gap:.8rem;
+  margin-bottom:.5rem;
+}
+.tc-label{
+  font-family:'Press Start 2P',monospace;
+  font-size:.5rem;
+  color:var(--hud-yellow);
+  min-width:80px;
+  text-align:right;
+}
+.tc-value{
+  font-size:1.2rem;
+  color:var(--text);
+}
+.tc-value a{color:var(--hud-blue);text-decoration:none;}
+.tc-value a:hover{text-shadow:0 0 6px rgba(0,191,255,.4);}
+
+.tc-heading{
+  font-family:'Press Start 2P',monospace;
+  font-size:.65rem;
+  color:var(--hud-green);
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  margin-bottom:.9rem;
+  padding-bottom:.6rem;
+  border-bottom:1px dashed var(--hud-green-dim);
+}
+.tc-badges{
+  display:flex;flex-wrap:wrap;gap:.4rem;
+  margin-top:1rem;
+  padding-top:.8rem;
+  border-top:1px dashed var(--border);
+}
+.tc-badge{
+  font-family:'Press Start 2P',monospace;
+  font-size:.4rem;
+  padding:.35rem .6rem;
+  border:1px solid var(--hud-green-dim);
+  color:var(--hud-green);
+  background:rgba(57,255,20,.05);
+  letter-spacing:.03em;
+}
+
+.press-start{
+  font-family:'Press Start 2P',monospace;
+  font-size:clamp(.5rem,1.2vw,.65rem);
+  color:var(--hud-red);
+  margin-top:2.5rem;
+  animation:blink 1.2s step-end infinite;
+  opacity:0;animation:fadeIn .8s ease 3s forwards,blink 1.2s step-end 3s infinite;
+}
+
+/* ── SECTIONS ── */
+.section{
+  max-width:1000px;margin:0 auto;
+  padding:4rem 2rem 2rem;
+  opacity:0;transform:translateY(30px);
+  transition:all .7s cubic-bezier(.22,1,.36,1);
+}
+.section.visible{opacity:1;transform:translateY(0);}
+
+.section-header{
+  display:flex;align-items:center;gap:1rem;
+  margin-bottom:2rem;
+  padding-bottom:.8rem;
+  border-bottom:2px solid var(--hud-green-dim);
+}
+.sh-icon{
+  font-size:1.5rem;
+  filter:drop-shadow(0 0 4px rgba(57,255,20,.3));
+}
+.sh-label{
+  font-family:'Press Start 2P',monospace;
+  font-size:.5rem;
+  color:var(--hud-yellow);
+  letter-spacing:.2em;
+}
+.sh-title{
+  font-family:'Press Start 2P',monospace;
+  font-size:clamp(.7rem,2vw,1rem);
+  color:var(--hud-green);
+  text-shadow:0 0 6px rgba(57,255,20,.2);
+}
+
+/* ── RACE STAGES (Experience) ── */
+.race-stages{display:flex;flex-direction:column;gap:1rem;}
+.stage{
+  background:var(--surface);
+  border:2px solid var(--border);
+  border-left:4px solid var(--hud-green-dim);
+  padding:0;
+  cursor:pointer;
+  transition:all .3s;
+  overflow:hidden;
+}
+.stage:hover,.stage.active{
+  border-color:var(--hud-green);
+  box-shadow:0 0 20px rgba(57,255,20,.06);
+}
+.stage-head{
+  display:grid;
+  grid-template-columns:60px 1fr auto;
+  align-items:center;
+  gap:1rem;
+  padding:1.2rem;
+}
+.stage-num{
+  font-family:'Press Start 2P',monospace;
+  font-size:1rem;
+  color:var(--hud-green-dim);
+  text-align:center;
+  transition:color .3s;
+}
+.stage:hover .stage-num,.stage.active .stage-num{color:var(--hud-green);}
+.stage-info h3{
+  font-family:'Press Start 2P',monospace;
+  font-size:clamp(.55rem,1.2vw,.7rem);
+  color:var(--hud-yellow);
+  margin-bottom:.3rem;
+}
+.stage-info .stage-role{
+  font-size:1.1rem;color:var(--text);
+  margin-bottom:.15rem;
+}
+.stage-info .stage-loc{
+  font-size:.85rem;color:var(--text-dim);
+}
+.stage-time{
+  font-family:'Press Start 2P',monospace;
+  font-size:.45rem;
+  color:var(--hud-orange);
+  text-align:right;
+  white-space:nowrap;
+}
+.stage-rank{
+  font-size:.75rem;
+  color:var(--hud-green);
+  margin-top:.3rem;
+  text-align:right;
+}
+
+.stage-body{
+  max-height:0;overflow:hidden;
+  transition:max-height .5s cubic-bezier(.22,1,.36,1),opacity .4s;
+  opacity:0;
+}
+.stage.active .stage-body{max-height:500px;opacity:1;}
+.stage-bullets{
+  list-style:none;
+  padding:.4rem 1.2rem 1.2rem 76px;
+}
+.stage-bullets li{
+  position:relative;
+  padding:.4rem 0 .4rem 1.4rem;
+  font-size:1rem;color:var(--text-dim);
+  line-height:1.5;
+}
+.stage-bullets li::before{
+  content:'>';
+  position:absolute;left:0;
+  font-family:'Press Start 2P',monospace;
+  font-size:.5rem;
+  color:var(--hud-green);
+  top:.55rem;
+}
+.stage-bullets li:hover{color:var(--text);}
+
+/* ── HUD STATS ── */
+.hud-stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:1rem;
+  margin-bottom:2rem;
+}
+.hstat{
+  background:var(--surface);
+  border:2px solid var(--border);
+  padding:1.2rem;
+  transition:all .3s;
+}
+.hstat:hover{
+  border-color:var(--hud-green-dim);
+  box-shadow:0 0 16px rgba(57,255,20,.05);
+}
+.hstat-label{
+  font-family:'Press Start 2P',monospace;
+  font-size:.4rem;
+  color:var(--hud-yellow);
+  letter-spacing:.1em;
+  margin-bottom:.5rem;
+}
+.hstat-value{
+  font-family:'Press Start 2P',monospace;
+  font-size:clamp(.9rem,2vw,1.4rem);
+  color:var(--hud-green);
+  text-shadow:0 0 6px rgba(57,255,20,.3);
+  margin-bottom:.6rem;
+}
+.hstat-bar{
+  width:100%;height:8px;
+  background:var(--asphalt);
+  border:1px solid var(--border);
+  position:relative;
+  overflow:hidden;
+}
+.hstat-fill{
+  height:100%;width:0;
+  transition:width 1.5s cubic-bezier(.22,1,.36,1);
+}
+.hstat-fill.green{background:var(--hud-green);}
+.hstat-fill.yellow{background:var(--hud-yellow);}
+.hstat-fill.orange{background:var(--hud-orange);}
+.hstat-fill.red{background:var(--hud-red);}
+
+/* ── BIKE SHOP (Education) ── */
+.bike-shop{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:1.2rem;
+}
+.bike-card{
+  background:var(--surface);
+  border:2px solid var(--border);
+  overflow:hidden;
+  transition:all .4s;
+}
+.bike-card:hover{
+  border-color:var(--hud-green);
+  transform:translateY(-4px);
+  box-shadow:0 8px 30px rgba(0,0,0,.3),0 0 20px rgba(57,255,20,.04);
+}
+.bike-card-top{
+  background:linear-gradient(135deg,var(--sky-top),var(--sky-bot));
+  padding:1.5rem;
+  position:relative;
+  display:flex;align-items:center;justify-content:center;
+  min-height:80px;
+}
+.bike-card-top .bike-ascii{
+  font-family:'Press Start 2P',monospace;
+  font-size:1.5rem;
+  color:var(--hud-yellow);
+  text-shadow:0 0 10px rgba(255,215,0,.3);
+}
+.bike-card-body{padding:1.2rem;}
+.bike-card-body .bike-year{
+  font-family:'Press Start 2P',monospace;
+  font-size:.4rem;color:var(--hud-orange);
+  letter-spacing:.08em;margin-bottom:.4rem;
+}
+.bike-card-body h3{
+  font-family:'Press Start 2P',monospace;
+  font-size:.6rem;color:var(--hud-yellow);
+  margin-bottom:.4rem;line-height:1.4;
+}
+.bike-card-body .bike-degree{
+  font-size:1rem;color:var(--text-dim);
+  margin-bottom:.8rem;
+}
+.bike-gpa{
+  display:inline-block;
+  font-family:'Press Start 2P',monospace;
+  font-size:.45rem;
+  padding:.3rem .6rem;
+  border:1px solid var(--hud-green-dim);
+  color:var(--hud-green);
+  background:rgba(57,255,20,.05);
+}
+
+/* ── TROPHY CASE (Achievements) ── */
+.trophy-case{display:flex;flex-direction:column;gap:.8rem;}
+.trophy-item{
+  display:flex;align-items:flex-start;gap:1rem;
+  background:var(--surface);
+  border:2px solid var(--border);
+  padding:1rem 1.2rem;
+  transition:all .3s;
+}
+.trophy-item:hover{
+  border-color:var(--hud-yellow);
+  transform:translateX(4px);
+  box-shadow:-4px 0 16px rgba(255,215,0,.06);
+}
+.trophy-icon{
+  width:40px;height:40px;min-width:40px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;
+  background:var(--surface2);
+  border:1px solid var(--border);
+}
+.trophy-text{font-size:1rem;color:var(--text-dim);line-height:1.5;}
+.trophy-text strong{color:var(--text);}
+.trophy-tag{
+  display:inline-block;
+  font-family:'Press Start 2P',monospace;
+  font-size:.35rem;
+  color:var(--hud-yellow);
+  background:rgba(255,215,0,.08);
+  border:1px solid rgba(255,215,0,.15);
+  padding:.2rem .4rem;
+  margin-top:.3rem;
+  letter-spacing:.06em;
+}
+
+/* ── PIT STOP (Leadership) ── */
+.pit-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:1rem;
+}
+.pit-card{
+  background:var(--surface);
+  border:2px solid var(--border);
+  border-top:3px solid var(--hud-green-dim);
+  padding:1.3rem;
+  transition:all .3s;
+}
+.pit-card:hover{
+  border-top-color:var(--hud-green);
+  transform:translateY(-3px);
+  box-shadow:0 8px 24px rgba(0,0,0,.2);
+}
+.pit-card h3{
+  font-family:'Press Start 2P',monospace;
+  font-size:.5rem;
+  color:var(--hud-yellow);
+  margin-bottom:.2rem;line-height:1.4;
+}
+.pit-card .pit-org{
+  font-size:.85rem;color:var(--hud-orange);
+  margin-bottom:.6rem;
+}
+.pit-card p{font-size:.95rem;color:var(--text-dim);line-height:1.5;}
+
+/* ── MINI GAME ── */
+.minigame-section{
+  text-align:center;
+  padding:3rem 2rem;
+  max-width:1000px;
+  margin:0 auto;
+}
+.minigame-label{
+  font-family:'Press Start 2P',monospace;
+  font-size:.5rem;color:var(--hud-green);
+  margin-bottom:.6rem;letter-spacing:.15em;
+}
+.minigame-sub{
+  font-size:.9rem;color:var(--text-dim);
+  margin-bottom:1.5rem;
+}
+#gameCanvas{
+  border:2px solid var(--hud-green-dim);
+  display:block;
+  margin:0 auto;
+  background:#0c0c0c;
+  max-width:100%;
+  image-rendering:pixelated;
+}
+.game-controls{
+  font-family:'Press Start 2P',monospace;
+  font-size:.4rem;
+  color:var(--text-dim);
+  margin-top:1rem;
+  letter-spacing:.06em;
+}
+
+/* ── FOOTER ── */
+footer{
+  text-align:center;
+  padding:3rem 2rem 2rem;
+  border-top:2px solid var(--hud-green-dim);
+  margin-top:2rem;
+}
+.footer-art{
+  font-family:'Press Start 2P',monospace;
+  font-size:.5rem;
+  color:var(--hud-green-dim);
+  line-height:1.6;
+  margin-bottom:1rem;
+  letter-spacing:.1em;
+}
+footer .fname{
+  font-family:'Press Start 2P',monospace;
+  font-size:.7rem;color:var(--hud-yellow);
+  margin-bottom:.4rem;
+}
+footer p{font-size:.85rem;color:var(--text-dim);}
+
+/* ── MOBILE ── */
+@media(max-width:700px){
+  .hud-nav{padding:0 .8rem;height:46px;}
+  .hud-center{gap:.7rem;}
+  .hud-center a{font-size:.38rem;}
+  .hud-health-bar{width:60px;}
+  .section{padding:3rem 1rem 1.5rem;}
+  .title-card{padding:1.2rem 1.5rem;}
+  .stage-head{grid-template-columns:40px 1fr auto;gap:.6rem;padding:.8rem;}
+  .stage-bullets{padding-left:52px;}
+  .hud-stats{grid-template-columns:repeat(2,1fr);}
+  #gameCanvas{width:100%;height:auto;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div class="loader" id="loader">
+  <div class="loader-text">LOADING RACE DATA...</div>
+  <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
+</div>
+
+<!-- HUD NAV -->
+<nav class="hud-nav">
+  <div class="hud-left">
+    <div class="hud-health-wrap">
+      <span class="hud-health-label">HP</span>
+      <div class="hud-health-bar"><div class="hud-health-fill"></div></div>
+    </div>
+  </div>
+  <div class="hud-center">
+    <a onclick="go('#stages')">RACES</a>
+    <a onclick="go('#garage')">GARAGE</a>
+    <a onclick="go('#trophies')">TROPHIES</a>
+    <a onclick="go('#pitstop')">PIT STOP</a>
+    <a onclick="go('#game')">PLAY</a>
+  </div>
+  <div class="hud-right">
+    <span class="hud-speed" id="speedNum">0</span>
+    <span class="hud-unit">KM/H</span>
+  </div>
+</nav>
+
+<!-- HERO: TITLE SCREEN -->
+<section class="hero">
+  <canvas id="roadCanvas"></canvas>
+  <div class="hero-overlay">
+    <div class="title-card">
+      <div class="tc-heading">DRIVER'S PROFILE</div>
+      <div class="tc-row">
+        <span class="tc-label">RIDER</span>
+        <span class="tc-value">Srijan Saxena</span>
+      </div>
+      <div class="tc-row">
+        <span class="tc-label">HOMETOWN</span>
+        <span class="tc-value">Bhopal, Madhya Pradesh</span>
+      </div>
+      <div class="tc-row">
+        <span class="tc-label">LEVEL</span>
+        <span class="tc-value">Consultant — Strategy & Innovation</span>
+      </div>
+      <div class="tc-row">
+        <span class="tc-label">TEAM</span>
+        <span class="tc-value">Deloitte USI</span>
+      </div>
+      <div class="tc-row">
+        <span class="tc-label">PHONE</span>
+        <span class="tc-value"><a href="tel:+918800130564">+91-8800130564</a></span>
+      </div>
+      <div class="tc-row">
+        <span class="tc-label">EMAIL</span>
+        <span class="tc-value"><a href="mailto:srijan.srijan.saxena@gmail.com">srijan.srijan.saxena@gmail.com</a></span>
+      </div>
+      <div class="tc-row">
+        <span class="tc-label">LINK</span>
+        <span class="tc-value"><a href="https://linkedin.com/in/srijan-saxena" target="_blank">linkedin.com/in/srijan-saxena ↗</a></span>
+      </div>
+    </div>
+
+    <div class="press-start">▶ SCROLL DOWN TO START RACE ▶</div>
+  </div>
+</section>
+
+<!-- BIKE SHOP (Education) -->
+<section class="section" id="garage">
+  <div class="section-header">
+    <span class="sh-icon">🏍️</span>
+    <div>
+      <div class="sh-label">UPGRADE</div>
+      <div class="sh-title">THE GARAGE</div>
+    </div>
+  </div>
+
+  <div class="bike-shop">
+    <div class="bike-card">
+      <div class="bike-card-top">
+        <div class="bike-ascii">🎓</div>
+      </div>
+      <div class="bike-card-body">
+        <div class="bike-year">2023 — 2025</div>
+        <h3>MDI GURGAON</h3>
+        <div class="bike-degree">PGDM — Information Management & Marketing</div>
+        <span class="bike-gpa">CGPA 7.3 / 10</span>
+      </div>
+    </div>
+    <div class="bike-card">
+      <div class="bike-card-top">
+        <div class="bike-ascii">⚡</div>
+      </div>
+      <div class="bike-card-body">
+        <div class="bike-year">2016 — 2020</div>
+        <h3>SHIV NADAR UNIVERSITY</h3>
+        <div class="bike-degree">B.Tech — Electronics & Communication Engineering</div>
+        <span class="bike-gpa">CGPA 8.4 / 10</span>
+      </div>
+    </div>
+    <div class="bike-card">
+      <div class="bike-card-top">
+        <div class="bike-ascii">🏁</div>
+      </div>
+      <div class="bike-card-body">
+        <div class="bike-year">2014 — 2016</div>
+        <h3>DPS VIDYUT NAGAR</h3>
+        <div class="bike-degree">Class XII — CBSE</div>
+        <span class="bike-gpa">90.4%</span>
+      </div>
+    </div>
+    <div class="bike-card">
+      <div class="bike-card-top">
+        <div class="bike-ascii">🚦</div>
+      </div>
+      <div class="bike-card-body">
+        <div class="bike-year">Till 2014</div>
+        <h3>DPS VIJAIPUR</h3>
+        <div class="bike-degree">Class X — CBSE</div>
+        <span class="bike-gpa">10 CGPA</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HUD STATS -->
+<section class="section" id="stats">
+  <div class="hud-stats">
+    <div class="hstat">
+      <div class="hstat-label">REPORTING REDUCED</div>
+      <div class="hstat-value" data-target="90" data-suffix="%">0</div>
+      <div class="hstat-bar"><div class="hstat-fill green" data-w="90"></div></div>
+    </div>
+    <div class="hstat">
+      <div class="hstat-label">STAKEHOLDERS</div>
+      <div class="hstat-value" data-target="40" data-suffix="+">0</div>
+      <div class="hstat-bar"><div class="hstat-fill yellow" data-w="70"></div></div>
+    </div>
+    <div class="hstat">
+      <div class="hstat-label">CASH SAVED (INR)</div>
+      <div class="hstat-value" data-target="1.1" data-decimal="true" data-prefix="₹" data-suffix="M">0</div>
+      <div class="hstat-bar"><div class="hstat-fill orange" data-w="55"></div></div>
+    </div>
+    <div class="hstat">
+      <div class="hstat-label">INSPIRE AWARDS</div>
+      <div class="hstat-value" data-target="12" data-suffix="x">0</div>
+      <div class="hstat-bar"><div class="hstat-fill red" data-w="80"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- RACE STAGES (Experience) -->
+<section class="section" id="stages">
+  <div class="section-header">
+    <span class="sh-icon">🏁</span>
+    <div>
+      <div class="sh-label">CAREER MODE</div>
+      <div class="sh-title">RACE STAGES</div>
+    </div>
+  </div>
+
+  <div class="race-stages">
+    <div class="stage active">
+      <div class="stage-head">
+        <div class="stage-num">01</div>
+        <div class="stage-info">
+          <h3>DELOITTE USI</h3>
+          <div class="stage-role">Consultant, Strategy & Business Innovation</div>
+          <div class="stage-loc">Gurgaon, Haryana</div>
+        </div>
+        <div>
+          <div class="stage-time">JUL 2025 — NOW</div>
+        </div>
+      </div>
+      <div class="stage-body">
+        <ul class="stage-bullets">
+          <li>Quantified market potential across 8 priority HR trends — Human Capital Innovation Growth Outlook FY26</li>
+          <li>Identified 10+ emerging domains via market scans & startup benchmarking</li>
+          <li>Built Investment Portfolio Dashboard with 3 executive views across 40+ innovation investments</li>
+          <li>Boosted practitioner engagement by 25–30% through Experience Zones across locations</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="stage-head">
+        <div class="stage-num">02</div>
+        <div class="stage-info">
+          <h3>ADITYA BIRLA GROUP</h3>
+          <div class="stage-role">Strategy Planning Intern</div>
+          <div class="stage-loc">Mumbai, Maharashtra</div>
+        </div>
+        <div>
+          <div class="stage-time">SUMMER 2024</div>
+        </div>
+      </div>
+      <div class="stage-body">
+        <ul class="stage-bullets">
+          <li>Led EV ecosystem strategy for Hindalco — 10 market visits, 50+ stakeholder interviews</li>
+          <li>Authored white paper with 10+ policy recommendations for MHI/MOCI dialogue</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="stage-head">
+        <div class="stage-num">03</div>
+        <div class="stage-info">
+          <h3>DELL TECHNOLOGIES</h3>
+          <div class="stage-role">Software Engineer 2, IT</div>
+          <div class="stage-loc">Bangalore, Karnataka</div>
+        </div>
+        <div>
+          <div class="stage-time">JUL 2020 — JUL 2023</div>
+        </div>
+      </div>
+      <div class="stage-body">
+        <ul class="stage-bullets">
+          <li>Headed cross-functional module: 8 business apps, 40+ stakeholders, concurrent projects</li>
+          <li>Led 5-member team deploying Salesforce CRM + 10+ Power BI dashboards</li>
+          <li>Improved turnaround efficiency 15%, client engagement up 18%</li>
+          <li>Built analytics solution cutting manual reporting by 90% — ₹1.1M annual savings</li>
+          <li>Game Changer award by Director + 12 Inspire Awards</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TROPHY CASE -->
+<section class="section" id="trophies">
+  <div class="section-header">
+    <span class="sh-icon">🏆</span>
+    <div>
+      <div class="sh-label">UNLOCKED</div>
+      <div class="sh-title">TROPHY CASE</div>
+    </div>
+  </div>
+
+  <div class="trophy-case">
+    <div class="trophy-item">
+      <div class="trophy-icon">🏁</div>
+      <div>
+        <div class="trophy-text">National Semi-Finalist in <strong>Flipkart Wired</strong> (Quick Commerce) — top among 86,000+ teams, PPI earned</div>
+        <div class="trophy-tag">COMPETITIVE · 2024</div>
+      </div>
+    </div>
+    <div class="trophy-item">
+      <div class="trophy-icon">🎓</div>
+      <div>
+        <div class="trophy-text">Nominated for <strong>OPJEMS Scholarship</strong> for meritorious entrance performance</div>
+        <div class="trophy-tag">SCHOLASTIC · 2024</div>
+      </div>
+    </div>
+    <div class="trophy-item">
+      <div class="trophy-icon">💰</div>
+      <div>
+        <div class="trophy-text">Awarded <strong>₹4.7 Lakh scholarship</strong> — Shiv Nadar University for academic excellence</div>
+        <div class="trophy-tag">SCHOLASTIC · 2016–20</div>
+      </div>
+    </div>
+    <div class="trophy-item">
+      <div class="trophy-icon">⚡</div>
+      <div>
+        <div class="trophy-text"><strong>Game Changer Award</strong> by Dell Director + 12 Inspire Awards for innovation & leadership</div>
+        <div class="trophy-tag">PROFESSIONAL</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PIT STOP (Leadership) -->
+<section class="section" id="pitstop">
+  <div class="section-header">
+    <span class="sh-icon">🔧</span>
+    <div>
+      <div class="sh-label">OFF-TRACK</div>
+      <div class="sh-title">PIT STOP</div>
+    </div>
+  </div>
+
+  <div class="pit-grid">
+    <div class="pit-card">
+      <h3>MENTORSHIP CELL</h3>
+      <div class="pit-org">MDI Gurgaon · 2023–25</div>
+      <p>Led placement prep for 1,200+ students via mock GDPI; mentored 1,000+ peers on CV building & corporate readiness.</p>
+    </div>
+    <div class="pit-card">
+      <h3>CULTURAL COMMITTEE</h3>
+      <div class="pit-org">MDI Gurgaon · 2023–25</div>
+      <p>Generated musical content with 43,000+ social impressions; organized 11 events averaging 250 attendees.</p>
+    </div>
+    <div class="pit-card">
+      <h3>FOOTBALL CHAMPION</h3>
+      <div class="pit-org">FMS Delhi · 2024</div>
+      <p>Secured 1st position in Inter-College Football Tournament organized by FMS Delhi.</p>
+    </div>
+    <div class="pit-card">
+      <h3>COMMUNITY SERVICE</h3>
+      <div class="pit-org">2022</div>
+      <p>Volunteered 50+ hours in tree planting and community teaching for local development.</p>
+    </div>
+  </div>
+</section>
+
+<!-- MINI GAME -->
+<section class="minigame-section section" id="game">
+  <div class="minigame-label">🎮 BONUS ROUND</div>
+  <div class="minigame-sub">Dodge traffic & collect coins! Use ← → arrow keys or tap sides of screen.</div>
+  <canvas id="gameCanvas" width="400" height="500"></canvas>
+  <div class="game-controls">ARROW KEYS TO STEER · DODGE CARS · COLLECT COINS · SURVIVE!</div>
+</section>
+
+<footer>
+  <div class="footer-art">═══════════════════════════════</div>
+  <div class="fname">SRIJAN SAXENA</div>
+  <p>Road Rash Résumé Edition · 2026</p>
+  <div class="footer-art" style="margin-top:.8rem;">═══════════════════════════════</div>
+</footer>
+
+<script>
+// ── LOADER ──
+window.addEventListener('load',()=>{setTimeout(()=>document.getElementById('loader').classList.add('hide'),1800);});
+
+// ── NAV ──
+function go(s){document.querySelector(s)?.scrollIntoView({behavior:'smooth',block:'start'});}
+
+// ── SECTION REVEAL ──
+const obs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible');});},{threshold:.08});
+document.querySelectorAll('.section').forEach(s=>obs.observe(s));
+
+// ── STAGE ACCORDION ──
+document.querySelectorAll('.stage').forEach(s=>{
+  s.addEventListener('click',()=>{
+    const was=s.classList.contains('active');
+    document.querySelectorAll('.stage').forEach(x=>x.classList.remove('active'));
+    if(!was)s.classList.add('active');
+  });
+});
+
+// ── HUD STATS COUNTER ──
+let hDone=false;
+const hObs=new IntersectionObserver(e=>{
+  if(e[0].isIntersecting&&!hDone){
+    hDone=true;
+    document.querySelectorAll('.hstat-value').forEach(el=>{
+      const t=parseFloat(el.dataset.target),dec=el.dataset.decimal==='true',
+            pre=el.dataset.prefix||'',suf=el.dataset.suffix||'',dur=1500,st=performance.now();
+      function tick(now){
+        const p=Math.min((now-st)/dur,1),e2=1-Math.pow(1-p,3),
+              v=dec?(t*e2).toFixed(1):Math.round(t*e2);
+        el.textContent=pre+v+(p>=1?suf:'');
+        if(p<1)requestAnimationFrame(tick);
+        else el.textContent=pre+(dec?t.toFixed(1):t)+suf;
+      }
+      requestAnimationFrame(tick);
+    });
+    document.querySelectorAll('.hstat-fill').forEach(b=>{
+      setTimeout(()=>{b.style.width=b.dataset.w+'%';},200);
+    });
+  }
+},{threshold:.3});
+const stEl=document.getElementById('stats');if(stEl)hObs.observe(stEl);
+
+// ── SPEEDOMETER tied to scroll ──
+let lastScroll=0,speed=0;
+setInterval(()=>{
+  const d=Math.abs(window.scrollY-lastScroll);
+  speed+=(Math.min(d*3,280)-speed)*.15;
+  lastScroll=window.scrollY;
+  document.getElementById('speedNum').textContent=Math.round(speed);
+},100);
+
+// ── NAV ACTIVE STATE ──
+const secs=document.querySelectorAll('.section[id]');
+window.addEventListener('scroll',()=>{
+  let cur='';
+  secs.forEach(s=>{if(window.scrollY>=s.offsetTop-200)cur=s.id;});
+  document.querySelectorAll('.hud-center a').forEach(a=>{
+    const h=a.getAttribute('onclick')||'';
+    a.classList.toggle('active',h.includes(cur)&&!!cur);
+  });
+});
+
+// ══════════════════════════════════════
+// ── PSEUDO-3D ROAD (Hero background) ──
+// ══════════════════════════════════════
+const rc=document.getElementById('roadCanvas'),rcx=rc.getContext('2d');
+function resizeRoad(){rc.width=rc.offsetWidth;rc.height=rc.offsetHeight;}
+resizeRoad();window.addEventListener('resize',resizeRoad);
+
+let roadOffset=0;
+function drawRoad(){
+  const W=rc.width,H=rc.height;
+  // Sky gradient
+  const skyG=rcx.createLinearGradient(0,0,0,H*.55);
+  skyG.addColorStop(0,'#0d0520');
+  skyG.addColorStop(.5,'#1a0a2e');
+  skyG.addColorStop(1,'#4a1942');
+  rcx.fillStyle=skyG;rcx.fillRect(0,0,W,H*.55);
+
+  // Stars
+  for(let i=0;i<40;i++){
+    const sx=(i*137.5)%W,sy=(i*97.3)%((H*.45));
+    rcx.fillStyle=`rgba(255,255,255,${.2+Math.sin(roadOffset*2+i)*.15})`;
+    rcx.fillRect(sx,sy,1.5,1.5);
+  }
+
+  // Mountains
+  rcx.fillStyle='#12081e';
+  rcx.beginPath();rcx.moveTo(0,H*.55);
+  for(let x=0;x<=W;x+=20){
+    const y=H*.55-Math.sin(x*.008)*40-Math.sin(x*.003)*25-20;
+    rcx.lineTo(x,y);
+  }
+  rcx.lineTo(W,H*.55);rcx.fill();
+
+  // Ground
+  rcx.fillStyle='#1a1a0a';rcx.fillRect(0,H*.55,W,H*.45);
+
+  // Road — pseudo 3D
+  const horizon=H*.55,roadBase=H,vanishX=W/2;
+  for(let y=horizon;y<roadBase;y++){
+    const t=(y-horizon)/(roadBase-horizon); // 0 at horizon, 1 at bottom
+    const roadW=t*W*.55;
+    const lx=vanishX-roadW/2,rx=vanishX+roadW/2;
+    // Asphalt
+    const shade=Math.floor(30+t*15);
+    rcx.fillStyle=`rgb(${shade},${shade},${shade})`;
+    rcx.fillRect(lx,y,roadW,1.5);
+
+    // Center dashed line
+    const segLen=12;
+    const lineZ=((y-horizon+roadOffset*150*t)%segLen)/segLen;
+    if(lineZ<.5){
+      rcx.fillStyle=`rgba(212,160,23,${.3+t*.5})`;
+      const cw=Math.max(1,t*4);
+      rcx.fillRect(vanishX-cw/2,y,cw,1.5);
+    }
+
+    // Edge lines
+    rcx.fillStyle=`rgba(255,255,255,${.1+t*.15})`;
+    const ew=Math.max(1,t*2);
+    rcx.fillRect(lx,y,ew,1.5);
+    rcx.fillRect(rx-ew,y,ew,1.5);
+  }
+
+  roadOffset+=.015;
+  requestAnimationFrame(drawRoad);
+}
+drawRoad();
+
+// ══════════════════════════════════
+// ── MINI ROAD RASH GAME ──
+// ══════════════════════════════════
+const gc=document.getElementById('gameCanvas'),gx=gc.getContext('2d');
+const GW=400,GH=500;
+
+let playerX=GW/2,playerLane=1;
+let obstacles=[],coins=[],score=0,lives=3,gameOver=false,gTick=0,gSpeed=3;
+let keysDown={};
+
+// Lanes
+const lanes=[GW*.28, GW*.5, GW*.72];
+
+function spawnObstacle(){
+  const lane=Math.floor(Math.random()*3);
+  obstacles.push({x:lanes[lane],y:-40,w:30,h:40,lane});
+}
+function spawnCoin(){
+  const lane=Math.floor(Math.random()*3);
+  coins.push({x:lanes[lane],y:-20,lane});
+}
+
+function resetGame(){
+  obstacles=[];coins=[];score=0;lives=3;gameOver=false;gTick=0;gSpeed=3;
+  playerX=lanes[1];playerLane=1;
+}
+
+document.addEventListener('keydown',e=>{
+  keysDown[e.key]=true;
+  if(gameOver&&e.key===' '){resetGame();}
+});
+document.addEventListener('keyup',e=>{keysDown[e.key]=false;});
+
+// Touch controls
+gc.addEventListener('touchstart',e=>{
+  e.preventDefault();
+  if(gameOver){resetGame();return;}
+  const rect=gc.getBoundingClientRect();
+  const tx=(e.touches[0].clientX-rect.left)/(rect.width)*GW;
+  if(tx<GW/2&&playerLane>0)playerLane--;
+  else if(tx>=GW/2&&playerLane<2)playerLane++;
+});
+
+function updateGame(){
+  if(gameOver)return;
+  gTick++;
+  gSpeed=3+Math.floor(gTick/300)*.5;
+
+  // Player movement
+  if((keysDown['ArrowLeft']||keysDown['a'])&&playerLane>0){playerLane--;keysDown['ArrowLeft']=false;keysDown['a']=false;}
+  if((keysDown['ArrowRight']||keysDown['d'])&&playerLane<2){playerLane++;keysDown['ArrowRight']=false;keysDown['d']=false;}
+  playerX+=(lanes[playerLane]-playerX)*.2;
+
+  // Spawn
+  if(gTick%45===0)spawnObstacle();
+  if(gTick%70===0)spawnCoin();
+
+  // Move obstacles
+  obstacles.forEach(o=>{o.y+=gSpeed;});
+  coins.forEach(c=>{c.y+=gSpeed;});
+
+  // Collision
+  obstacles=obstacles.filter(o=>{
+    if(o.y>GH+50)return false;
+    if(o.y+o.h>GH-60&&o.y<GH-20&&Math.abs(o.x-playerX)<22){
+      lives--;
+      if(lives<=0)gameOver=true;
+      return false;
+    }
+    return true;
+  });
+  coins=coins.filter(c=>{
+    if(c.y>GH+30)return false;
+    if(c.y>GH-70&&c.y<GH-20&&Math.abs(c.x-playerX)<20){
+      score+=10;return false;
+    }
+    return true;
+  });
+}
+
+let roadOff2=0;
+function drawGame(){
+  // Sky
+  const sg=gx.createLinearGradient(0,0,0,GH*.4);
+  sg.addColorStop(0,'#0d0520');sg.addColorStop(1,'#2a1040');
+  gx.fillStyle=sg;gx.fillRect(0,0,GW,GH*.4);
+
+  // Ground
+  gx.fillStyle='#1a1a0a';gx.fillRect(0,GH*.4,GW,GH*.6);
+
+  // Road
+  const rLeft=GW*.18,rRight=GW*.82,rW=rRight-rLeft;
+  gx.fillStyle='#2a2a2a';gx.fillRect(rLeft,GH*.4,rW,GH*.6);
+
+  // Road lines
+  roadOff2=(roadOff2+gSpeed)%30;
+  gx.strokeStyle='rgba(212,160,23,.5)';gx.lineWidth=2;
+  gx.setLineDash([12,12]);gx.lineDashOffset=-roadOff2;
+  // lane dividers
+  for(let i=1;i<3;i++){
+    const lx=rLeft+i*(rW/3);
+    gx.beginPath();gx.moveTo(lx,GH*.4);gx.lineTo(lx,GH);gx.stroke();
+  }
+  gx.setLineDash([]);
+
+  // Edge lines
+  gx.strokeStyle='rgba(255,255,255,.2)';gx.lineWidth=2;
+  gx.beginPath();gx.moveTo(rLeft,GH*.4);gx.lineTo(rLeft,GH);gx.stroke();
+  gx.beginPath();gx.moveTo(rRight,GH*.4);gx.lineTo(rRight,GH);gx.stroke();
+
+  // Obstacles (red cars)
+  obstacles.forEach(o=>{
+    gx.fillStyle='#cc2222';
+    gx.fillRect(o.x-15,o.y,30,40);
+    gx.fillStyle='#ff4444';
+    gx.fillRect(o.x-12,o.y+4,24,10);
+    gx.fillStyle='#881111';
+    gx.fillRect(o.x-12,o.y+28,24,8);
+    // Wheels
+    gx.fillStyle='#111';
+    gx.fillRect(o.x-17,o.y+4,5,8);
+    gx.fillRect(o.x+12,o.y+4,5,8);
+    gx.fillRect(o.x-17,o.y+28,5,8);
+    gx.fillRect(o.x+12,o.y+28,5,8);
+  });
+
+  // Coins
+  coins.forEach(c=>{
+    gx.fillStyle='#ffd700';
+    gx.beginPath();gx.arc(c.x,c.y,8,0,Math.PI*2);gx.fill();
+    gx.fillStyle='#aa8800';
+    gx.font='bold 10px sans-serif';gx.textAlign='center';gx.textBaseline='middle';
+    gx.fillText('$',c.x,c.y);
+  });
+
+  // Player bike
+  gx.fillStyle='#39ff14';
+  // Body
+  gx.fillRect(playerX-8,GH-55,16,35);
+  gx.fillStyle='#2acc10';
+  gx.fillRect(playerX-6,GH-50,12,12);
+  // Wheels
+  gx.fillStyle='#222';
+  gx.fillRect(playerX-10,GH-58,5,8);
+  gx.fillRect(playerX+5,GH-58,5,8);
+  gx.fillRect(playerX-10,GH-24,5,8);
+  gx.fillRect(playerX+5,GH-24,5,8);
+  // Rider head
+  gx.fillStyle='#ffd700';
+  gx.fillRect(playerX-4,GH-62,8,8);
+
+  // HUD
+  gx.fillStyle='rgba(0,0,0,.6)';gx.fillRect(0,0,GW,32);
+  gx.font='12px "Press Start 2P",monospace';gx.textAlign='left';
+  gx.fillStyle='#ffd700';gx.fillText('SCORE: '+score,10,22);
+  gx.fillStyle='#39ff14';gx.textAlign='center';
+  gx.fillText('SPEED: '+Math.round(gSpeed*30)+' KM/H',GW/2,22);
+  gx.textAlign='right';
+  gx.fillStyle='#ff2a2a';
+  let hpText='';for(let i=0;i<lives;i++)hpText+='♥ ';
+  gx.fillText(hpText,GW-10,22);
+
+  if(gameOver){
+    gx.fillStyle='rgba(0,0,0,.7)';gx.fillRect(0,GH*.35,GW,GH*.3);
+    gx.font='18px "Press Start 2P",monospace';gx.textAlign='center';
+    gx.fillStyle='#ff2a2a';
+    gx.fillText('WIPEOUT!',GW/2,GH*.45);
+    gx.font='10px "Press Start 2P",monospace';
+    gx.fillStyle='#ffd700';
+    gx.fillText('SCORE: '+score,GW/2,GH*.52);
+    gx.fillStyle='#39ff14';
+    gx.fillText('SPACE / TAP TO RETRY',GW/2,GH*.58);
+  }
+}
+
+function gameLoop(){
+  updateGame();
+  drawGame();
+  requestAnimationFrame(gameLoop);
+}
+// Start game when visible
+const gObs=new IntersectionObserver(e=>{
+  if(e[0].isIntersecting&&!window._gameStarted){
+    window._gameStarted=true;
+    gameLoop();
+  }
+},{threshold:.3});
+gObs.observe(document.getElementById('game'));
+
+</script>
+</body>
+</html>
