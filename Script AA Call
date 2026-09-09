@@ -19,3 +19,72 @@ So we retain a true recurring product model, without giving up the services oppo
 This is my script for a presentation, can you give it my signature? 
 
 /alfred
+
+
+Yes. I’d deliver both **line by line like this**, so you can control the pacing and pause naturally.
+
+### Card 4 — What pricing model do buyers prefer?
+
+“The fourth finding is about **how we should charge for the product**.”
+
+“Historically, enterprise license agreements are the most familiar model, but our buyer interviews did not point to one single answer.”
+
+“Buyers were actually open to several structures — subscription, volume-based pricing, outcome-based pricing, and a platform fee with consumption.”
+
+“And the competitor table tells a similar story — **the market itself is fragmented across access, usage, activity and scale-based models**.”
+
+“But two boundaries came through quite clearly.”
+
+“First, **per-seat pricing is a weak fit**.”
+
+“Buyers don’t want the cost of the product to increase simply because they make it available to more people — particularly when agents themselves are doing more of the work.”
+
+“Second, pure consumption pricing creates the opposite problem — it can become difficult to predict and budget.”
+
+“That is why the more interesting model for us is a **stable platform fee, with a bounded consumption component on top**.”
+
+“Outcome-based pricing was attractive conceptually because it shares risk, but buyers raised challenges around attribution and measurement, and we did not find competitors using true outcome-based pricing at scale.”
+
+“For usage-based models, buyers gave us some very tangible denominators — transactions completed, line items processed, or resolutions completed by the agent.”
+
+“So the takeaway is: **keep the base predictable, let usage scale with activity, but put a cap around that variability**.”
+
+“That is why our recommendation is to test a **platform fee with capped consumption**.” 
+
+---
+
+### Card 5 — How do competitors package comparable solutions?
+
+“The fifth finding moves from **how we price it to what exactly the customer is buying**.”
+
+“And here the market signal is much clearer.”
+
+“**Fifteen of the sixteen competitors we evaluated sell software or a platform as the core transaction.**”
+
+“So even where implementation is very services-intensive, the commercial anchor is still the product.”
+
+“Palantir is the clear exception — its model is much more configured and services-led, with engineering support embedded deeply into the engagement.”
+
+“But the important point is that **product-led does not mean services-free**.”
+
+“Almost every product competitor still has a services layer around the software.”
+
+“And where the structure is visible, that layer tends to look very similar.”
+
+“Implementation and configuration happen upfront.”
+
+“Training sits alongside deployment.”
+
+“And ongoing operational or advisory support is usually optional.”
+
+“We also see implementation generally priced separately from the license, rather than buried inside the software price.”
+
+“So for Agentic Aftermarket, the implication is to keep the structure clean.”
+
+“**Bundle software, updates, maintenance, hosting, security and core support into the subscription.**”
+
+“Price integration and configuration separately.”
+
+“And then offer change management, training and ongoing operating support as an optional layer.”
+
+“So we preserve the recurring product economics, while still capturing the services opportunity around deployment.” 
