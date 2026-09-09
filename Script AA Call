@@ -1,0 +1,21 @@
+“The fourth finding is really about what the right pricing mechanism should be, rather than the absolute price point.
+What we found is that there isn’t one dominant model in the market. Enterprise licenses are still very common, but both buyers and competitors are moving toward more flexible models that reflect actual scale or activity. We see everything from inventory and asset-based pricing, to revenue-based pricing, to AI consumption layered on top of a platform fee.
+But there are two important boundaries.
+First, per-seat pricing is not particularly attractive for this type of product. Buyers don’t want the economics to get worse simply because they expand access across the organization. And as agents start doing more of the work, pricing purely around human users becomes even less logical.
+Second, buyers also don’t want the opposite extreme — unlimited, uncapped consumption pricing — because that creates budget uncertainty. That’s why even competitors that meter AI generally put consumption on top of a broader platform or subscription fee rather than making it the entire commercial model.
+Outcome-based pricing was also interesting: buyers like the risk-sharing concept, but attribution and measurement make it difficult, and we didn’t find competitors actually using pure outcome-based pricing at scale.
+So our takeaway is to test a platform fee with capped consumption — give the buyer predictable base economics, while still allowing price to scale with actual agent activity. And potentially use something tangible, like transactions or agent resolutions, as that usage denominator.”
+Simple memory hook: “Avoid seats, avoid an open meter — anchor with a platform fee and bound the usage.”
+
+Yes — I’d remove the OEM-context explanation and use that time to unpack what we actually learned from the competitor set.
+Revised ~1:30 script
+“The fifth finding is about how competitors structure the product versus the services around it.
+The clearest signal from the market is that the core transaction is overwhelmingly a product transaction. In our set, 15 of the 16 competitors sell licensed software or a platform as the core offer. Palantir is really the exception, where engineering and configuration are much more deeply embedded into the commercial model.
+But the important nuance is that product-led does not mean services-free. Across the market, competitors still attach services to get the product deployed — but they generally keep those services commercially distinct from the software. That pattern shows up across Servigistics, Syncron, ToolsGroup, Kinaxis, IFS and others.
+And the services themselves follow a fairly consistent structure: implementation and configuration sit upfront; training sits alongside deployment; and ongoing operational or advisory support is usually an optional layer. Baxter, for example, takes this further with Planning-as-a-Service, while Kinaxis and ketteQ use more standardized implementation approaches.
+So the implication for Agentic Aftermarket is fairly clean: keep the product economics separate from the services economics. The subscription should cover the actual product — software, hosting, maintenance, security and core support. Integration and configuration should be a separate implementation line, with training, change management and ongoing support available as optional services.
+So we retain a true recurring product model, without giving up the services opportunity around deployment.”
+
+This is my script for a presentation, can you give it my signature? 
+
+/alfred
