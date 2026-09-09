@@ -88,3 +88,67 @@ Yes. I’d deliver both **line by line like this**, so you can control the pacin
 “And then offer change management, training and ongoing operating support as an optional layer.”
 
 “So we preserve the recurring product economics, while still capturing the services opportunity around deployment.” 
+
+
+
+
+
+
+
+
+Yes. If you want to **walk the team through both cards rather than just state the headline**, I’d use this version. It keeps the narrative connected and covers the detail on the cards without sounding like you are reading bullets.
+
+### Card 4 — Pricing model
+
+“Moving to the pricing model itself, the first thing we found is that **there isn’t one standard model that the market has converged on**.
+
+Historically, enterprise license agreements are the most familiar structure, and buyers are still comfortable with that. But in the interviews, buyers were also open to subscription, volume-based pricing, outcome-based pricing, and particularly a **platform fee with a consumption component**.
+
+The competitor landscape reflects that same diversity. We see enterprise licenses with players like Palantir and o9; platform and seat-based models with Oracle and Salesforce; consumption layered on top through SAP AI Units, Oracle AI Units and Salesforce Flex Credits; and scale-based models with Servigistics and IFS. Then you have vendors like Syncron, Baxter, ToolsGroup and ketteQ using more customized subscription structures.
+
+So there is no single market standard, but a few boundaries became clear.
+
+**Per-seat pricing was one of the weaker fits.** For a large organization, buyers don't want price increasing simply because they want more people using the solution. And interestingly, even Oracle and Salesforce — the two clear seat-based examples in our research — separately meter AI consumption on top.
+
+At the other end, **pure consumption pricing isn't really how competitors price the entire product either**. Where consumption exists, it's generally layered onto some underlying platform, scope or capacity fee. Buyers want the economics to remain predictable.
+
+Outcome-based pricing got a mixed reaction. Buyers like the idea of sharing risk, but in practice, questions around attribution, data access and how you actually measure the outcome make it difficult. We also did not find a competitor using true outcome-based pricing as its core model today.
+
+Managed BPaaS was the least attractive structure because these buyers generally don't want to outsource the entire capability.
+
+Where usage-based pricing did resonate, buyers actually gave us some fairly tangible ways to meter it — **transactions completed, line items shipped, or resolutions completed by the agent**. The common theme is that the denominator needs to be observable and easy to understand.
+
+So our takeaway is not that there is one obvious model we have to copy. It actually gives us room to choose. Based on the buyer feedback, the model we think is most worth testing is **a platform fee with capped consumption** — a predictable base for the customer, with some ability for price to scale as actual usage grows.”
+
+---
+
+### Transition into Card 5
+
+“And once we've answered **how we charge**, the next question is **what exactly sits inside that charge versus what gets sold separately**.”
+
+### Card 5 — Product and services packaging
+
+“Here, the market signal is much more consistent.
+
+Of the **16 competitors we evaluated, 15 sell packaged software, a license or a platform as the core transaction**. And that's true even for competitors where there is a significant amount of implementation work behind the scenes.
+
+**Palantir is really the exception.** Its model is much more services-led and configured around the individual customer, with dedicated engineering, onboarding and consulting relationships built deeply into the engagement.
+
+But the important distinction is that **product-led does not mean services-free**.
+
+Nearly every product competitor still has a services layer around the product. What changes is that those services are generally kept commercially separate from the license.
+
+Implementation and configuration typically happen upfront. Training usually sits alongside deployment. And then ongoing operating, advisory or managed support becomes an optional layer after go-live.
+
+We also found that **implementation is almost always priced separately from the software**. IBM Maximo is the notable exception in our set, where a required service package is bundled with the product.
+
+And that pattern gives us a fairly straightforward structure for Agentic Aftermarket.
+
+The **core subscription** should include the things that make this a product — the software itself, updates, maintenance, hosting, security and core support.
+
+Then **integration and configuration should be a separate implementation line**, because that effort will vary materially by customer.
+
+And finally, things like **change management, training and ongoing operational support can sit as an optional services overlay**.
+
+So the overall message across Cards 4 and 5 is quite consistent: **give the customer predictable product economics, let usage scale within clear boundaries, and keep customer-specific implementation and services visible rather than hiding them inside the software price.**”
+
